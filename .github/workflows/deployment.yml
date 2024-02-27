@@ -14,7 +14,7 @@ permissions:
   actions: read
 jobs:
   deploy-app:
-    runs-on: [self-hosted, Windows, x64]
+    runs-on: [ubuntu-latest]
     environment: 
       name: prod
     steps:
