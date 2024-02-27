@@ -20,6 +20,13 @@ param workload string
 @description('Sandbox subscription ID')
 param SubscriptionID string
 
+@description('Sandbox client ID')
+param ClientId string
+
+@description('Sandbox TenantId ID')
+param TenantId string
+
+
 
 
 @description('Automation account private endpoint resource definition')
