@@ -1,0 +1,47 @@
+name: deploy
+on: 
+  push:
+    branches:
+      - main
+env:
+  TEMPLATE_FILE_PATH: ./infrastructure/main.bicep
+  INSTANCE_COUNT: "01"
+  WORKLOAD: "costautomation"
+  ENVIRONMENT: "sndbx"
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+jobs:
+  deploy-app:
+    runs-on: [self-hosted, Windows, x64]
+    environment: 
+      name: sndbx
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect To Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+      - name: Running preflight validation
+        uses: azure/arm-deploy@v1
+        with:   
+          resourceGroupName: rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+          template: ${{ env.TEMPLATE_FILE_PATH }}
+          parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} smtppassword=${{ secrets.SMTPPASSWORD }}
+          deploymentMode: Validate
+          scope: resourcegroup
+      - name: Deploying azure infrastructure
+        run: |
+          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }} smtppassword=${{ secrets.SMTPPASSWORD }}
+      - name: Importing runbooks
+        shell: pwsh
+        run: |
+          ./.github/powershell/deployRunbook.ps1 rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+      - name: Scheduling the runbook.
+        run: |
+          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/schedular.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }}
