@@ -15,19 +15,9 @@ param environment string
 @description('Application workload type')
 param workload string
 
-// @description('Deny resource creation Policy ID')
-// param PolicyId string
-
-
 @description('smtpserver')
 param ClientId string
 
-@description('smtpport')
-param TenantId string 
-
-@description('Sender')
-@secure()
-param AppSecret string
 
 @description('Sandbox subscription ID')
 param SubscriptionID string
@@ -81,16 +71,6 @@ resource automationAccountSubscriptionIDVariable 'Microsoft.Automation/automatio
   properties: {
     isEncrypted: false
     value: '"${SubscriptionID}"'
-  }
-}
-
-@description('A resource definition to hold excludedRGlist variable') 
-resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
-  parent: automationAccount
-  name: 'app-Secret'
-  properties: {
-    isEncrypted: true
-    value: secureString(reference(concat('secrets.' AppSecret)))
   }
 }
 
