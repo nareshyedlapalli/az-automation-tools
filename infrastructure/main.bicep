@@ -9,7 +9,7 @@ param location string = 'eastus2'
  
 @description('SMTP configuration password')
 @secure()
-param AppSecret string = 'v0_8Q~fKq9OQSerrPn6_yhgf7xrW1THHJJSXwcHb'
+param AppSecretValue string
 
 @description('A module that defines all the environment specific configuration')
 module configModule './configuration.bicep' = {
@@ -40,7 +40,7 @@ module automationAccountModule './automation-account.bicep' = {
     privateEndpointSubnetId: privateEndpointSubnet.id
     workload: workload
     environment: environment
-    AppSecret: config.AppSecret
+    AppSecret: AppSecretValue
     TenantId: config.TenantId
   }    
 }

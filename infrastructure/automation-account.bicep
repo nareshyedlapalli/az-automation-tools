@@ -32,6 +32,8 @@ param AppSecret string
 @description('Sandbox subscription ID')
 param SubscriptionID string
 
+
+
 @description('Automation account private endpoint resource definition')
 resource automationAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
   name: 'pep-aa-${workload}-${environment}-${location}-01'
@@ -88,7 +90,7 @@ resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAcc
   name: 'app-Secret'
   properties: {
     isEncrypted: true
-    value: '"${AppSecret}"'
+    value: secureString(reference(concat('secrets.' AppSecret)))
   }
 }
 
