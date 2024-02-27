@@ -33,11 +33,11 @@ module automationAccountModule './automation-account.bicep' = {
   params: {
     automationAccountName: 'aa-${workload}-${environment}-${location}-01'
     location: location
-    SubscriptionID:'f5d606b1-21fd-4844-9e05-e859515fc168'
-    ClientId: 'edaae7d6-2147-4102-809c-7fa44a06f716'
+    SubscriptionID: config.SubscriptionID
+    ClientId: config.ClientId
     privateEndpointSubnetId: privateEndpointSubnet.id
     workload: workload
     environment: environment
-    TenantId: '95933331-9c40-4ebf-9199-cd4c72f03a84'
+    TenantId: config.TenantId
   }    
 }
