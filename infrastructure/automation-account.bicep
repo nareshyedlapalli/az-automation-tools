@@ -15,8 +15,6 @@ param environment string
 @description('Application workload type')
 param workload string
 
-@description('smtpserver')
-param ClientId string
 
 
 @description('Sandbox subscription ID')
@@ -73,6 +71,8 @@ resource automationAccountSubscriptionIDVariable 'Microsoft.Automation/automatio
     value: '"${SubscriptionID}"'
   }
 }
+
+
 
 @description('A resource definition to hold excludedRGlist variable') 
 resource automationAccountsmtpportVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
