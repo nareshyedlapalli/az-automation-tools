@@ -29,12 +29,12 @@ jobs:
         with:   
           resourceGroupName: rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
           template: ${{ env.TEMPLATE_FILE_PATH }}
-          parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }}
+          parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }}
           deploymentMode: Validate
           scope: resourcegroup
       - name: Deploying azure infrastructure
         run: |
-          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }}
+          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }} 
       - name: Importing runbooks
         shell: pwsh
         run: |
