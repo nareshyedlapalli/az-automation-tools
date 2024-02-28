@@ -2,7 +2,7 @@ name: deploy
 on: 
   push:
     branches:
-      - main
+     # - main
 env:
   TEMPLATE_FILE_PATH: ./infrastructure/main.bicep
   INSTANCE_COUNT: "01"
@@ -54,7 +54,7 @@ jobs:
           $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:AZURE_CLIENT_ID, $SecurePassword
           Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
           Set-AzContext -SubscriptionName $env:AZURE_SUBSCRIPTION_ID
-          ./.github/powershell/deployRunbook.ps1 rg-${{ env.WORKLOAD }}-tooling-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+          ./.github/powershell/deployRunbook.ps1 rg-${{ env.WORKLOAD }}-tooling-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-tooling-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
       - name: Scheduling the runbook.
         if: ${{ env.ENVIRONMENT == 'prd' }}
         run: |
