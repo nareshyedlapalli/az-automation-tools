@@ -27,7 +27,7 @@ resource ClientSecretExpiration 'Microsoft.Automation/automationAccounts/schedul
   name: 'ClientSecretExpiration'
   properties: {
     description: 'Run every day once'
-    startTime: '2024-02-28T08:19:00-05:00'
+    startTime: '2024-02-29T08:19:00-05:00'
     expiryTime: '9999-12-31T17:59:00-06:00'
     interval: 1
     frequency: 'Day'
