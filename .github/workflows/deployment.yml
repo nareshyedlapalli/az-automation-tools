@@ -50,8 +50,9 @@ jobs:
          # Import Azure PowerShell module
           Import-Module -Name Az -Force
          # Authenticate with Azure using service principal credentials
-          $cred = Get-Credential -UserName $env:AZURE_CLIENT_ID -Password ($env:AZURE_CLIENT_SECRET | ConvertTo-SecureString -AsPlainText -Force)
-          Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $env:AZURE_TENANT_ID -Subscription $env:AZURE_SUBSCRIPTION_ID
+          $SecurePassword = ConvertTo-SecureString -String $env:AZURE_CLIENT_SECRET -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:AZURE_CLIENT_ID, $SecurePassword
+          Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
           ./.github/powershell/deployRunbook.ps1 rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
       - name: Scheduling the runbook.
         run: |
