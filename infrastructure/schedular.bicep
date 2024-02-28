@@ -1,20 +1,23 @@
 @description('Workload name')
-param workload string = 'crop'
+param workload string
 
 @description('Environment name')
-param environment string = 'prod'
+param environment string
 
 @description('Resource Group location')
-param location string = 'eastus2'
+param location string
 
 
 @description('Send Email Alert')
 var ClientSecretExpirationRunbook = 'ClientSecretExpiration'
 
-var automationAccountName = 'aa-${workload}-${environment}-${location}-01'
+var automationAccountName = 'automation-${workload}-${environment}-${location}-01'
 
 @description('Parameter to store the curent time')
 param Time string = utcNow()
+
+param startTimeUtc string = utcNow()
+param delayMinutes int = 25
 
 @description('Creating Automation account resource ')
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
@@ -27,7 +30,7 @@ resource ClientSecretExpiration 'Microsoft.Automation/automationAccounts/schedul
   name: 'ClientSecretExpiration'
   properties: {
     description: 'Run every day once'
-    startTime: '2024-02-29T08:19:00-05:00'
+    startTime: '${startTimeUtc} + duration(\'PT\' + string${delayMinutes} + \'M\')'
     expiryTime: '9999-12-31T17:59:00-06:00'
     interval: 1
     frequency: 'Day'
@@ -49,7 +52,3 @@ resource AddDenyResourcePolicyjobSchedule 'Microsoft.Automation/automationAccoun
     }
   }
 }
-
-
-
-
