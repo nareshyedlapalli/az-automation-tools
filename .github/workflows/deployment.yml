@@ -14,23 +14,20 @@ permissions:
   actions: read
 jobs:
   deploy-app:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: 
       name: prod
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up Azure PowerShell
-        uses: azure/powershell@v1
-        with:
-          azModules: Az
-          installModules: true
-          modulesVersion: 'latest'
       - name: Connect To Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
+      - name: Install Azure PowerShell module
+        run: |
+          pwsh -Command "Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser"
       - name: Running preflight validation
         uses: azure/arm-deploy@v1
         with:   
