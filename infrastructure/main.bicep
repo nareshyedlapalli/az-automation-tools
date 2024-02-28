@@ -1,13 +1,21 @@
 @description('Workload name')
-param workload string = 'crop'
+param workload string 
 
 @description('Environment name')
-param environment string = 'prod'
+param environment string
 
 @description('Resource Group location')
-param location string = 'eastus2'
+param location string
 
+@description('AppSecret')
+@secure()
 param AppSecretValue string
+
+@description('Emain TO')
+param EmailTo string
+
+@description('Email Sender')
+param EmailSender string
  
 
 
@@ -31,9 +39,9 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-0
 
 @description('Module to create automation-account')
 module automationAccountModule './automation-account.bicep' = {
-  name:  'aa-${workload}-${environment}-${location}-01'
+  name:  'automation-${workload}-${environment}-${location}-01'
   params: {
-    automationAccountName: 'aa-${workload}-${environment}-${location}-01'
+    automationAccountName: 'automation-${workload}-${environment}-${location}-01'
     location: location
     SubscriptionID: config.SubscriptionID
     ClientId: config.ClientId
@@ -42,5 +50,7 @@ module automationAccountModule './automation-account.bicep' = {
     environment: environment
     TenantId: config.TenantId
     AppSecret: AppSecretValue
+    EmailSender: EmailSender
+    EmailTo: EmailTo
   }    
 }
