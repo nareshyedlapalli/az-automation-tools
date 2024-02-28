@@ -14,7 +14,7 @@ permissions:
   actions: read
 jobs:
   deploy-app:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     environment: 
       name: prod
     steps:
