@@ -1,8 +1,8 @@
-# name: deploy
-# on: 
-#   push:
-#     branches:
-#       - main
+name: deploy
+on: 
+  push:
+    branches:
+      - main
 env:
   TEMPLATE_FILE_PATH: ./infrastructure/main.bicep
   INSTANCE_COUNT: "01"
