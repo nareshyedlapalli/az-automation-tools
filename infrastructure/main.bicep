@@ -6,6 +6,8 @@ param environment string = 'prod'
 
 @description('Resource Group location')
 param location string = 'eastus2'
+
+param AppSecretValue string
  
 
 
@@ -39,5 +41,6 @@ module automationAccountModule './automation-account.bicep' = {
     workload: workload
     environment: environment
     TenantId: config.TenantId
+    AppSecret: AppSecretValue
   }    
 }
