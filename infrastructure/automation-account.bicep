@@ -15,8 +15,6 @@ param environment string
 @description('Application workload type')
 param workload string
 
-
-
 @description('Sandbox subscription ID')
 param SubscriptionID string
 
@@ -26,8 +24,9 @@ param ClientId string
 @description('Sandbox TenantId ID')
 param TenantId string
 
-
-
+@description('Sender')
+@secure()
+param AppSecret string
 
 @description('Automation account private endpoint resource definition')
 resource automationAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
@@ -79,7 +78,15 @@ resource automationAccountSubscriptionIDVariable 'Microsoft.Automation/automatio
   }
 }
 
-
+@description('A resource definition to hold excludedRGlist variable') 
+resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+  parent: automationAccount
+  name: 'app-Secret'
+  properties: {
+    isEncrypted: true
+    value: secureString(reference(concat('secrets.' AppSecret)))
+  }
+}
 
 @description('A resource definition to hold excludedRGlist variable') 
 resource automationAccountsmtpportVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
