@@ -20,6 +20,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set up Azure PowerShell
+        uses: azure/powershell@v1
+        with:
+          azModules: Az
+          installModules: true
+          modulesVersion: 'latest'
       - name: Connect To Azure
         uses: azure/login@v1
         with:
