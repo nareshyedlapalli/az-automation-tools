@@ -24,18 +24,26 @@ param ClientId string
 @description('Sandbox TenantId ID')
 param TenantId string
 
-@description('Sender')
+@description('AppSecret')
 @secure()
 param AppSecret string
 
+@description('Sender')
+param EmailSender string
+
+@description('To')
+param EmailTo string
+
+
+
 @description('Automation account private endpoint resource definition')
 resource automationAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
-  name: 'pep-aa-${workload}-${environment}-${location}-01'
+  name: 'pep-automation-${workload}-${environment}-${location}-01'
   location: location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: 'plconnection-aa-${workload}-${environment}'
+        name: 'plconnection-automation-${workload}-${environment}'
         properties: {
           privateLinkServiceId: automationAccount.id
           groupIds: ['Webhook']
@@ -79,7 +87,7 @@ resource automationAccountSubscriptionIDVariable 'Microsoft.Automation/automatio
 }
 
 @description('A resource definition to hold excludedRGlist variable') 
-resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+resource automationAccounAppSecretVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
   parent: automationAccount
   name: 'app-Secret'
   properties: {
@@ -89,7 +97,7 @@ resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAcc
 }
 
 @description('A resource definition to hold excludedRGlist variable') 
-resource automationAccountsmtpportVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+resource automationAccountTenetIdVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
   parent: automationAccount
   name: 'tenant-id'
   properties: {
@@ -99,7 +107,7 @@ resource automationAccountsmtpportVariable 'Microsoft.Automation/automationAccou
 }
 
 @description('A resource definition to hold excludedRGlist variable') 
-resource automationAccountSenderVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+resource automationAccountClientIdVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
   parent: automationAccount
   name: 'client-id'
   properties: {
@@ -107,5 +115,22 @@ resource automationAccountSenderVariable 'Microsoft.Automation/automationAccount
     value: '"${ClientId}"'
   }
 }
+@description('A resource definition to hold excludedRGlist variable') 
+resource automationAccountEmailSenderVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+  parent: automationAccount
+  name: 'email-sender'
+  properties: {
+    isEncrypted: true
+    value: '"${EmailSender}"'
+  }
+}
 
-
+@description('A resource definition to hold excludedRGlist variable') 
+resource automationAccountEmailToVariable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+  parent: automationAccount
+  name: 'email-to'
+  properties: {
+    isEncrypted: false
+    value: '"${EmailTo}"'
+  }
+}
