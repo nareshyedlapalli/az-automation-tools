@@ -41,7 +41,7 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-0
 module automationAccountModule './automation-account.bicep' = {
   name:  'aa-${workload}-${environment}-${location}-01'
   params: {
-    automationAccountName: 'aa-${workload}-${environment}-${location}-01'
+    automationAccountName: 'aa-${workload}-tooling-${environment}-${location}-01'
     location: location
     SubscriptionID: config.SubscriptionID
     ClientId: config.ClientId
