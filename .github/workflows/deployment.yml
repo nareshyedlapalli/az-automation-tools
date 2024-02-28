@@ -28,20 +28,30 @@ jobs:
       - name: Install Azure PowerShell module
         run: |
           pwsh -Command "Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser"
-      - name: Running preflight validation
-        uses: azure/arm-deploy@v1
-        with:   
-          resourceGroupName: rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
-          template: ${{ env.TEMPLATE_FILE_PATH }}
-          parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }}
-          deploymentMode: Validate
-          scope: resourcegroup
-      - name: Deploying azure infrastructure
-        run: |
-          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }} 
+      # - name: Running preflight validation
+      #   uses: azure/arm-deploy@v1
+      #   with:   
+      #     resourceGroupName: rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+      #     template: ${{ env.TEMPLATE_FILE_PATH }}
+      #     parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }}
+      #     deploymentMode: Validate
+      #     scope: resourcegroup
+      # - name: Deploying azure infrastructure
+      #   run: |
+      #     az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ vars.WORKLOAD }} environment=${{ env.ENVIRONMENT }} 
       - name: Importing runbooks
         shell: pwsh
+        env:
+         AZURE_CLIENT_ID: ${{fromJson(secrets.AZURE_CREDENTIALS).clientId}}
+         AZURE_CLIENT_SECRET: ${{fromJson(secrets.AZURE_CREDENTIALS).clientSecret}}
+         AZURE_SUBSCRIPTION_ID: ${{fromJson(secrets.AZURE_CREDENTIALS).subscriptionId}}
+         AZURE_TENANT_ID: ${{fromJson(secrets.AZURE_CREDENTIALS).tenantId}}
         run: |
+         # Import Azure PowerShell module
+          Import-Module -Name Az -Force
+         # Authenticate with Azure using service principal credentials
+          $cred = Get-Credential -UserName $env:AZURE_CLIENT_ID -Password ($env:AZURE_CLIENT_SECRET | ConvertTo-SecureString -AsPlainText -Force)
+          Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $env:AZURE_TENANT_ID -Subscription $env:AZURE_SUBSCRIPTION_ID
           ./.github/powershell/deployRunbook.ps1 rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
       - name: Scheduling the runbook.
         run: |
