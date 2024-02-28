@@ -2,12 +2,12 @@ name: deploy
 on: 
   push:
     branches:
-      - test
-
+      - main
 env:
   TEMPLATE_FILE_PATH: ./infrastructure/main.bicep
   INSTANCE_COUNT: "01"
   WORKLOAD: "tooling"
+  ENVIRONMENT: "np"
 permissions:
   id-token: write
   contents: read
@@ -15,12 +15,8 @@ permissions:
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
-    inputs:
-      ENVIRONMENT:
-        description: 'Environment for deployment'
-        required: true
-        default: 'np'  # Default value if no choice is made
-        options: ['prd', 'np']  # Options for the environment variable
+    environment: 
+      name: np
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,14 +31,14 @@ jobs:
       - name: Running preflight validation
         uses: azure/arm-deploy@v1
         with:   
-          resourceGroupName: rg-automation-${{ env.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+          resourceGroupName: rg-automation-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
           template: ${{ env.TEMPLATE_FILE_PATH }}
-          parameters: environment=${{ inputs.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
+          parameters: environment=${{ env.ENVIRONMENT }} location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
           deploymentMode: Validate
           scope: resourcegroup
       - name: Deploying azure infrastructure
         run: |
-          az deployment group create --resource-group rg-automation-${{ env.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ inputs.ENVIRONMENT }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
+          az deployment group create --resource-group rg-automation-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/main.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ env.ENVIRONMENT }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
       - name: Importing runbooks
         shell: pwsh
         env:
@@ -58,8 +54,8 @@ jobs:
           $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:AZURE_CLIENT_ID, $SecurePassword
           Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
           Set-AzContext -SubscriptionName $env:AZURE_SUBSCRIPTION_ID
-          ./.github/powershell/deployRunbook.ps1 rg-automation-${{ env.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} automation-${{ env.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
+          ./.github/powershell/deployRunbook.ps1 rg-automation-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} aa-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }}
       - name: Scheduling the runbook.
-        if: ${{ inputs.ENVIRONMENT == 'prd' }
+        if: ${{ env.ENVIRONMENT == 'prd' }}
         run: |
-          az deployment group create --resource-group rg-automation-${{ env.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/schedular.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ inputs.ENVIRONMENT }}
+          az deployment group create --resource-group rg-automation-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/schedular.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ env.ENVIRONMENT }}
