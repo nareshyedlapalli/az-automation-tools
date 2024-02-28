@@ -24,6 +24,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
       - name: Running preflight validation
         uses: azure/arm-deploy@v1
         with:   
