@@ -38,12 +38,12 @@ param EmailTo string
 
 @description('Automation account private endpoint resource definition')
 resource automationAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
-  name: 'pep-automation-${workload}-${environment}-${location}-01'
+  name: 'pep-${workload}-tooling-${environment}-${location}-01'
   location: location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: 'plconnection-automation-${workload}-${environment}'
+        name: 'plconnection-${workload}-tooling-${environment}'
         properties: {
           privateLinkServiceId: automationAccount.id
           groupIds: ['Webhook']
