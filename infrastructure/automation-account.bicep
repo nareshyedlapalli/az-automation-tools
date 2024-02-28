@@ -84,7 +84,7 @@ resource automationAccountsmtpserverVariable 'Microsoft.Automation/automationAcc
   name: 'app-Secret'
   properties: {
     isEncrypted: true
-    value: secureString(reference(concat('secrets.' AppSecret)))
+    value: '"${AppSecret}"'
   }
 }
 
