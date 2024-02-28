@@ -39,7 +39,7 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-0
 
 @description('Module to create automation-account')
 module automationAccountModule './automation-account.bicep' = {
-  name:  'automation-${workload}-${environment}-${location}-01'
+  name:  'aa-automation-${workload}-${environment}-${location}-01'
   params: {
     automationAccountName: 'automation-${workload}-${environment}-${location}-01'
     location: location
