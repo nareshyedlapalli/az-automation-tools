@@ -1,13 +1,16 @@
 $AppID = Get-AutomationVariable -Name 'client-id' 
 $TenantID = Get-AutomationVariable -Name 'tenant-id'
-$AppSecret = Get-AutomationVariable -Name 'app-Secret'  
+$AppSecret = Get-AutomationVariable -Name 'app-Secret' 
+$emailSender = Get-AutomationVariable -Name 'email-sender'
+$emailTo = Get-AutomationVariable -Name 'email-to'
 
 [int32]$expirationDays = 90
-[string]$emailSender = Get-AutomationVariable -Name 'sender'
-[string] $emailTo = "System.Admins@fbitn.com"
+
 
 Function Connect-MSGraphAPI {
     param (
+        [system.string]$emailSender,
+        [system.string]$emailTo,
         [system.string]$AppID,
         [system.string]$TenantID,
         [system.string]$AppSecret
