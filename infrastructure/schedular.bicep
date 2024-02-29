@@ -11,7 +11,7 @@ param location string
 @description('Send Email Alert')
 var ClientSecretExpirationRunbook = 'ClientSecretExpiration'
 
-var automationAccountName = 'aa-${workload}-tooling-${environment}-${location}-01'
+var automationAccountName = 'aa-${workload}-${environment}-${location}-01'
 
 @description('Parameter to store the curent time')
 param Time string = utcNow()
