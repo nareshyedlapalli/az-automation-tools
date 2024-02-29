@@ -15,35 +15,35 @@ param environment string
 @description('Application workload type')
 param workload string
 
-@description('Sandbox subscription ID')
+@description('Environment subscription ID')
 param SubscriptionID string
 
-@description('Sandbox client ID')
+@description('Environment client ID')
 param ClientId string
 
-@description('Sandbox TenantId ID')
+@description('Environment tenantId ID')
 param TenantId string
 
-@description('AppSecret')
+@description('Environment client ID appsecret')
 @secure()
 param AppSecret string
 
-@description('Sender')
+@description('Email Sender')
 param EmailSender string
 
-@description('To')
+@description('Email To')
 param EmailTo string
 
 
 
 @description('Automation account private endpoint resource definition')
 resource automationAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
-  name: 'pep-${workload}-tooling-${environment}-${location}-01'
+  name: 'pep-${workload}-${environment}-${location}-01'
   location: location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: 'plconnection-${workload}-tooling-${environment}'
+        name: 'plconnection-${workload}-${environment}'
         properties: {
           privateLinkServiceId: automationAccount.id
           groupIds: ['Webhook']
