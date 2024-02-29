@@ -18,13 +18,13 @@ param workload string
 @description('Environment subscription ID')
 param SubscriptionID string
 
-@description('Environment client ID')
+@description('Subscription client ID')
 param ClientId string
 
-@description('Environment tenantId ID')
+@description('Subscription tenantId ID')
 param TenantId string
 
-@description('Environment client ID appsecret')
+@description('Subscription client ID appsecret')
 @secure()
 param AppSecret string
 
