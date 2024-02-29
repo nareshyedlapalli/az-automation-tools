@@ -7,7 +7,7 @@ param environment string
 @description('Resource Group location')
 param location string
 
-@description('AppSecret')
+@description('Subscription client ID appsecret')
 @secure()
 param AppSecretValue string
 
