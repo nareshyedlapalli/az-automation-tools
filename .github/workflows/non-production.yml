@@ -1,4 +1,4 @@
-name: appservice-plans-nonproduction
+name: automation-account-nonproduction
 
 ####################################################################
 ## Triggers
@@ -23,7 +23,7 @@ permissions:
 ####################################################################
 jobs:
   deploy:
-    uses: fbitn/az-appservice-plans/.github/workflows/deploy.yml@main
+    uses: fbitn/az-automation-account/.github/workflows/deploy.yml@main
     with:
       template_file_path: infrastructure/main.bicep
       build_id: ${{ inputs.build_id }}
