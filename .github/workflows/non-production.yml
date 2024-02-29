@@ -27,7 +27,7 @@ jobs:
     with:
       template_file_path: infrastructure/main.bicep
       build_id: ${{ inputs.build_id }}
-      workload: appserviceplans
+      workload: "automation-tooling"
       environment: np
       location: eastus2
       instance_count: "01"
