@@ -1,6 +1,5 @@
 @description('Environment name')
 @allowed([
-  'sndbx'
   'prd'
   'np'
 ])
