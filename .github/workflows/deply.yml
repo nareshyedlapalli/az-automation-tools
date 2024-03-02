@@ -105,8 +105,7 @@ jobs:
           
       ####################################################################
       ## Deploying Schedule on prd
-      ####################################################################
-      
+            
       - name: Scheduling the runbook.
         if: ${{ env.ENVIRONMENT == 'prd' }}
         uses: azure/arm-deploy@v1
