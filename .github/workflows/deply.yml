@@ -82,6 +82,7 @@ jobs:
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
           deploymentmode: Complete
           scope: resourcegroup 
+          
       ####################################################################
       ## Deploying Runbooks
       ####################################################################
@@ -101,17 +102,17 @@ jobs:
           Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
           Set-AzContext -SubscriptionName $env:AZURE_SUBSCRIPTION_ID
           ./.github/powershell/deployRunbook.ps1 rg-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }} aa-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }}
+          
       ####################################################################
       ## Deploying Schedule on prd
       ####################################################################
+      
       - name: Scheduling the runbook.
-        if: ${{ env.ENVIRONMENT == 'prd' }}uses: azure/arm-deploy@v1
+        if: ${{ env.ENVIRONMENT == 'prd' }}
+        uses: azure/arm-deploy@v1
         with:
           resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
           template: ${{ inputs.schedule_template_file_path }}
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} location=${{ inputs.location }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
           deploymentmode: Complete
           scope: resourcegroup
-
-        run: |
-          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/schedular.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ env.ENVIRONMENT }}
