@@ -1,4 +1,4 @@
-name: appservice-plans-deploy
+name: automation-account-deploy
 
 ####################################################################
 ## Triggers
@@ -7,6 +7,10 @@ on:
   workflow_call:
     inputs:
       template_file_path: 
+        required: true
+        description: Path to bicep template to deploy infrastructure.
+        type: string
+      schedule_template_file_path: 
         required: true
         description: Path to bicep template to deploy infrastructure.
         type: string
@@ -64,7 +68,7 @@ jobs:
         with:
           resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
           template: ${{ inputs.template_file_path }}
-          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
+          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
           deploymentmode: Validate
           scope: resourcegroup
       ####################################################################
@@ -75,6 +79,39 @@ jobs:
         with:
           resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
           template: ${{ inputs.template_file_path }}
-          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
+          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
+          deploymentmode: Complete
+          scope: resourcegroup 
+      ####################################################################
+      ## Deploying Runbooks
+      ####################################################################
+
+      - name: Importing runbooks
+        shell: pwsh
+        env:
+         AZURE_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+         AZURE_CLIENT_SECRET: ${{ secrets.AZURE_APP_SECRET }}
+         AZURE_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+         AZURE_TENANT_ID: ${{ secrets.TENANT_ID }}
+        run: |
+         # Import Azure PowerShell module
+          Import-Module -Name Az -Force# Authenticate with Azure using service principal credentials
+          $SecurePassword = ConvertTo-SecureString -String $env:AZURE_CLIENT_SECRET -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:AZURE_CLIENT_ID, $SecurePassword
+          Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
+          Set-AzContext -SubscriptionName $env:AZURE_SUBSCRIPTION_ID
+          ./.github/powershell/deployRunbook.ps1 rg-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }} aa-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }}
+      ####################################################################
+      ## Deploying Schedule on prd
+      ####################################################################
+      - name: Scheduling the runbook.
+        if: ${{ env.ENVIRONMENT == 'prd' }}uses: azure/arm-deploy@v1
+        with:
+          resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
+          template: ${{ inputs.schedule_template_file_path }}
+          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} location=${{ inputs.location }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
           deploymentmode: Complete
           scope: resourcegroup
+
+        run: |
+          az deployment group create --resource-group rg-${{ env.WORKLOAD }}-${{ env.ENVIRONMENT }}-${{ vars.LOCATION }}-${{ env.INSTANCE_COUNT }} --template-file ./infrastructure/schedular.bicep --parameters location=${{ vars.LOCATION }}  workload=${{ env.WORKLOAD }} environment=${{ env.ENVIRONMENT }}
