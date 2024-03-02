@@ -54,3 +54,14 @@ module automationAccountModule './automation-account.bicep' = {
     EmailTo: EmailTo
   }    
 }
+@description('Module to create schedule')
+module scheduleRunbook './schedular.bicep' = if (environment == 'prd') {
+  name: 'schedule-${workload}-${environment}-${location}-01'
+  params: {    
+    location: location
+    workload: workload
+    environment: environment
+  }
+}
+
+     
