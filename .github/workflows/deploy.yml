@@ -57,10 +57,9 @@ jobs:
       - name: Login to azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          #client-id: ${{ secrets.CLIENT_ID }}
-          #tenant-id: ${{ secrets.TENANT_ID }}
-          #subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
       ####################################################################
       ## Running infrastructure validation
       ####################################################################
