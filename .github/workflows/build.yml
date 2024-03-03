@@ -33,4 +33,17 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.INFRASTRUCTURE_DIRECTORY }}
-        path: ${{ env.INFRASTRUCTURE_DIRECTORY }}
+        path: ${{ env.INFRASTRUCTURE_DIRECTORY }} 
+   ####################################################################
+    ## Pass GitHub Run ID as an output
+    ####################################################################
+    - name: Set Build ID
+      id: set_build_id
+      run: echo "Build ID is ${{ github.run_id }}"
+    ####################################################################
+    ## Output Build ID as an action output
+    ####################################################################
+    - name: Output Build ID
+      run: echo "::set-output name=build_id::${{ steps.set_build_id.outputs.stdout }}"
+      id: build_id_output
+        
