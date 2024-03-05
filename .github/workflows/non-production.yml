@@ -1,4 +1,4 @@
-name: automation-tools-nonproduction
+name: automation-tooling-nonproduction
 
 ####################################################################
 ## Triggers
@@ -23,7 +23,7 @@ permissions:
 ####################################################################
 jobs:
   deploy:
-    uses: nareshyedlapalli/az-automation-tools/.github/workflows/deploy.yml@main
+    uses: fbitn/az-automation-tooling/.github/workflows/deploy.yml@main
     with:
       template_file_path: infrastructure/main.bicep
       schedule_template_file_path: infrastructure/scheduler.bicep
