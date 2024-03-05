@@ -33,3 +33,15 @@ jobs:
       location: eastus2
       instance_count: "01"
     secrets: inherit
+  deploy-schedule-prd:
+    name: Deploying Schedule on prd
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      
+      - name: Scheduling the runbook.
+        uses: azure/arm-deploy@v1
+        with:
+          resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
+          template: ${{ inputs.schedule_template_file_path }}
