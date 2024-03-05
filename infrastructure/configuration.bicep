@@ -1,12 +1,12 @@
 @description('Environment name')
 @allowed([
   'prd'
-  'np'
+  'dev'
 ])
 param environment string
 
 var environmentConfigurationMap = {
-  np: {
+  dev: {
     SubscriptionID: 'f5d606b1-21fd-4844-9e05-e859515fc168'
     ClientId: 'edaae7d6-2147-4102-809c-7fa44a06f716'
     TenantId: '95933331-9c40-4ebf-9199-cd4c72f03a84'
