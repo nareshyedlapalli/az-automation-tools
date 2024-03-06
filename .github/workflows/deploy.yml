@@ -102,16 +102,3 @@ jobs:
           Connect-AzAccount -ServicePrincipal -TenantId $env:AZURE_TENANT_ID -Credential $Credential -Subscription $env:AZURE_SUBSCRIPTION_ID
           Set-AzContext -SubscriptionName $env:AZURE_SUBSCRIPTION_ID
           ./.github/powershell/deployRunbook.ps1 rg-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }} aa-${{ inputs.WORKLOAD }}-${{ inputs.ENVIRONMENT }}-${{ inputs.LOCATION }}-${{ inputs.INSTANCE_COUNT }}
-          
-      ####################################################################
-      ## Deploying Schedule on prd
-            
-      - name: Scheduling the runbook.
-        if: ${{ env.ENVIRONMENT == 'prd' }}
-        uses: azure/arm-deploy@v1
-        with:
-          resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
-          template: ${{ inputs.schedule_template_file_path }}
-          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} location=${{ inputs.location }} AppSecretValue=${{ secrets.AZURE_APP_SECRET }} EmailSender=${{ secrets.EMAIL_SENDER }} EmailTo=${{ secrets.EMAIL_TO }}
-          deploymentmode: Complete
-          scope: resourcegroup
